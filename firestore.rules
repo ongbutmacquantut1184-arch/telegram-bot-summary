@@ -1,0 +1,97 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: messages
+    // Document ID: {messageId}
+    // Fields:
+    //   - id: string (required)
+    //   - chatId: string (required)
+    //   - chatTitle: string (required)
+    //   - sender: string (required)
+    //   - text: string (required)
+    //   - timestamp: number (required)
+    //
+    // Collection: summaries
+    // Document ID: {summaryId}
+    // Fields:
+    //   - id: string (required)
+    //   - chatId: string (required)
+    //   - chatTitle: string (required)
+    //   - summary: string (required)
+    //   - timestamp: number (required)
+    //
+    // Collection: config
+    // Document ID: {configId}
+    // Fields:
+    //   - telegramToken: string (required)
+    //   - groqApiKey: string (required)
+    //   - isWebhookSet: boolean (required)
+    //
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function hasRequiredMessageFields() {
+      return request.resource.data.keys().hasAll(['id', 'chatId', 'chatTitle', 'sender', 'text', 'timestamp']);
+    }
+
+    function isValidMessage() {
+      return hasRequiredMessageFields() &&
+             request.resource.data.id is string &&
+             request.resource.data.chatId is string &&
+             request.resource.data.chatTitle is string &&
+             request.resource.data.sender is string &&
+             request.resource.data.text is string &&
+             request.resource.data.timestamp is number;
+    }
+
+    function hasRequiredSummaryFields() {
+      return request.resource.data.keys().hasAll(['id', 'chatId', 'chatTitle', 'summary', 'timestamp']);
+    }
+
+    function isValidSummary() {
+      return hasRequiredSummaryFields() &&
+             request.resource.data.id is string &&
+             request.resource.data.chatId is string &&
+             request.resource.data.chatTitle is string &&
+             request.resource.data.summary is string &&
+             request.resource.data.timestamp is number;
+    }
+
+    function hasRequiredConfigFields() {
+      return request.resource.data.keys().hasAll(['telegramToken', 'groqApiKey', 'isWebhookSet']);
+    }
+
+    function isValidConfig() {
+      return hasRequiredConfigFields() &&
+             request.resource.data.telegramToken is string &&
+             request.resource.data.groqApiKey is string &&
+             request.resource.data.isWebhookSet is bool;
+    }
+
+    match /messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidMessage();
+      allow delete: if isAuthenticated();
+    }
+
+    match /summaries/{summaryId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidSummary();
+      allow delete: if isAuthenticated();
+    }
+
+    match /config/{configId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && isValidConfig();
+      allow delete: if isAuthenticated();
+    }
+  }
+}

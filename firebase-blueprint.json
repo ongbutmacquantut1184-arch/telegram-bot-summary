@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "Message": {
+      "title": "Message",
+      "description": "A Telegram message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "chatTitle": { "type": "string" },
+        "sender": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "chatId", "chatTitle", "sender", "text", "timestamp"]
+    },
+    "Summary": {
+      "title": "Summary",
+      "description": "A generated summary of a chat",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "chatId": { "type": "string" },
+        "chatTitle": { "type": "string" },
+        "summary": { "type": "string" },
+        "timestamp": { "type": "number" }
+      },
+      "required": ["id", "chatId", "chatTitle", "summary", "timestamp"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "Bot configuration",
+      "type": "object",
+      "properties": {
+        "telegramToken": { "type": "string" },
+        "groqApiKey": { "type": "string" },
+        "isWebhookSet": { "type": "boolean" }
+      },
+      "required": ["telegramToken", "groqApiKey", "isWebhookSet"]
+    }
+  },
+  "firestore": {
+    "/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Stores all intercepted Telegram messages"
+    },
+    "/summaries/{summaryId}": {
+      "schema": "Summary",
+      "description": "Stores all generated summaries"
+    },
+    "/config/{configId}": {
+      "schema": "Config",
+      "description": "Stores the bot configuration (usually a single document 'main')"
+    }
+  }
+}

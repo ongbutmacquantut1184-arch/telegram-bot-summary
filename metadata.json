@@ -1,0 +1,5 @@
+{
+  "name": "TeleBot AI",
+  "description": "Bot Telegram tóm tắt nội dung trò chuyện bằng AI (Groq) với Dashboard quản lý.",
+  "requestFramePermissions": []
+}
